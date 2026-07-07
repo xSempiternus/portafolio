@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nikolas — Visión Computacional Aplicada</title>
+<meta name="description" content="Pipelines de visión computacional que convierten video e imágenes en decisiones: detección de defectos, inspección de infraestructura y análisis automático.">
+<style>
+  /* ============ PALETA Y BASE ============ */
+  :root{
+    --bg:#0b1220; --panel:#111a2e; --panel2:#0e1626;
+    --accent:#38bdf8; --accent2:#818cf8; --text:#e2e8f0; --muted:#94a3b8;
+    --ok:#34d399; --border:rgba(148,163,184,.15);
+  }
+  *{margin:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;line-height:1.6}
+  a{color:var(--accent);text-decoration:none}
+  section{max-width:1100px;margin:0 auto;padding:72px 24px}
+  h2{font-size:1.9rem;margin-bottom:8px}
+  .sub{color:var(--muted);margin-bottom:36px;max-width:720px}
+
+  /* ============ NAV ============ */
+  nav{position:sticky;top:0;background:rgba(11,18,32,.85);backdrop-filter:blur(10px);
+      border-bottom:1px solid var(--border);z-index:10}
+  .nav-inner{max-width:1100px;margin:0 auto;padding:14px 24px;display:flex;justify-content:space-between;align-items:center}
+  .logo{font-weight:700;font-size:1.05rem}
+  .logo span{color:var(--accent)}
+  .nav-links a{color:var(--muted);margin-left:22px;font-size:.92rem;transition:color .2s}
+  .nav-links a:hover{color:var(--text)}
+
+  /* ============ HERO ============ */
+  .hero{padding:96px 24px 64px;text-align:center}
+  .hero h1{font-size:clamp(2rem,5vw,3.2rem);line-height:1.15;margin-bottom:18px}
+  .hero h1 em{font-style:normal;background:linear-gradient(90deg,var(--accent),var(--accent2));
+              -webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero p{color:var(--muted);max-width:640px;margin:0 auto 32px;font-size:1.1rem}
+  .cta{display:inline-block;background:linear-gradient(90deg,var(--accent),var(--accent2));
+       color:#0b1220;font-weight:700;padding:13px 30px;border-radius:10px;transition:transform .15s}
+  .cta:hover{transform:translateY(-2px)}
+  .cta.ghost{background:transparent;color:var(--text);border:1px solid var(--border);margin-left:12px}
+
+  /* ============ VIDEO HERO ============ */
+  .video-wrap{max-width:900px;margin:48px auto 0;border-radius:16px;overflow:hidden;
+              border:1px solid var(--border);box-shadow:0 24px 60px rgba(0,0,0,.45);position:relative}
+  .video-wrap .ratio{position:relative;padding-top:56.25%}
+  .video-wrap iframe,.video-wrap video{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .placeholder{position:absolute;inset:0;display:flex;flex-direction:column;gap:10px;
+               align-items:center;justify-content:center;background:
+               repeating-linear-gradient(45deg,var(--panel),var(--panel) 12px,var(--panel2) 12px,var(--panel2) 24px);
+               color:var(--muted);font-size:.95rem;text-align:center;padding:20px}
+  .placeholder b{color:var(--text)}
+
+  /* ============ STATS ============ */
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-top:56px}
+  .stat{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:22px;text-align:center}
+  .stat .n{font-size:1.9rem;font-weight:800;color:var(--accent)}
+  .stat .l{color:var(--muted);font-size:.85rem}
+
+  /* ============ CASOS ============ */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:16px;overflow:hidden;
+        display:flex;flex-direction:column;transition:transform .2s,border-color .2s}
+  .card:hover{transform:translateY(-4px);border-color:var(--accent)}
+  .card .media{position:relative;padding-top:56.25%;background:var(--panel2)}
+  .card .media iframe,.card .media video{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .card .body{padding:20px 22px 24px;flex:1;display:flex;flex-direction:column}
+  .tag{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+       color:var(--accent);margin-bottom:8px}
+  .card h3{font-size:1.15rem;margin-bottom:8px}
+  .card p{color:var(--muted);font-size:.92rem;flex:1}
+  .card .link{margin-top:14px;font-size:.9rem;font-weight:600}
+
+  /* ============ PIPELINE ============ */
+  .pipe{display:flex;flex-wrap:wrap;gap:0;justify-content:center;margin-top:12px}
+  .step{background:var(--panel);border:1px solid var(--border);border-radius:12px;
+        padding:16px 18px;margin:8px;min-width:150px;max-width:200px;text-align:center;position:relative}
+  .step .ico{font-size:1.5rem;margin-bottom:6px}
+  .step b{display:block;font-size:.92rem;margin-bottom:4px}
+  .step small{color:var(--muted);font-size:.78rem}
+  .arrow{align-self:center;color:var(--accent);font-size:1.3rem;margin:0 -2px}
+
+  /* ============ DEMO EMBED ============ */
+  .demo-frame{width:100%;height:560px;border:1px solid var(--border);border-radius:16px;background:var(--panel2)}
+
+  /* ============ CONTACTO ============ */
+  .contact{text-align:center;background:var(--panel);border:1px solid var(--border);
+           border-radius:20px;padding:56px 24px}
+  footer{text-align:center;color:var(--muted);font-size:.8rem;padding:28px;border-top:1px solid var(--border)}
+  @media(max-width:640px){.arrow{display:none}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <div class="logo">Nikolas<span>·CV</span></div>
+    <div class="nav-links">
+      <a href="#casos">Casos</a><a href="#proceso">Proceso</a>
+      <a href="#demo">Demo en vivo</a><a href="#contacto">Contacto</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<div class="hero">
+  <h1>Convierto video e imágenes<br>en <em>decisiones automáticas</em></h1>
+  <p>Pipelines de visión computacional de punta a punta: detección de defectos,
+     inspección de infraestructura y análisis visual — desde los datos crudos
+     hasta el informe que tu equipo usa para decidir.</p>
+  <a class="cta" href="#contacto">Agendar demo de 20 min</a>
+  <a class="cta ghost" href="#casos">Ver casos</a>
+
+  <!-- VIDEO PRINCIPAL: reemplaza el div.placeholder por tu iframe de YouTube (unlisted).
+       Formato recomendado: pantalla dividida video original | video con detecciones.
+       <iframe src="https://www.youtube.com/embed/TU_VIDEO_ID?rel=0" allowfullscreen></iframe> -->
+  <div class="video-wrap"><div class="ratio">
+    <div class="placeholder">
+      <b>▶ VIDEO HERO — reemplázame</b>
+      Video dividido: footage original vs detecciones en vivo (YOLO).<br>
+      Sube a YouTube (unlisted) y pega el iframe aquí (instrucciones en el comentario HTML).
+    </div>
+  </div></div>
+
+  <div class="stats" style="max-width:900px;margin-left:auto;margin-right:auto">
+    <div class="stat"><div class="n">95%+</div><div class="l">precisión típica en detección de defectos</div></div>
+    <div class="stat"><div class="n">2 sem</div><div class="l">de tus datos al primer informe</div></div>
+    <div class="stat"><div class="n">24/7</div><div class="l">inspección continua sin fatiga</div></div>
+    <div class="stat"><div class="n">100%</div><div class="l">remoto: tú capturas, yo proceso</div></div>
+  </div>
+</div>
+
+<!-- ============ CASOS ============ -->
+<section id="casos">
+  <h2>Casos demostrables</h2>
+  <p class="sub">Cada caso es el mismo pipeline adaptado a un problema distinto —
+     eso es lo que compras: un método probado, no un experimento.</p>
+  <div class="grid">
+
+    <div class="card">
+      <div class="media">
+        <!-- Reemplazar por iframe de YouTube del caso vial -->
+        <div class="placeholder"><b>▶ Video caso vial</b>detecciones sobre footage de carretera</div>
+      </div>
+      <div class="body">
+        <span class="tag">Infraestructura vial</span>
+        <h3>Deterioro de pavimento desde video vehicular</h3>
+        <p>Dashcam estándar + GPS → catastro georreferenciado de grietas y baches,
+           priorizado por severidad, con evidencia fotográfica auditable.
+           Entrenado sobre 2.800+ imágenes reales (dataset multinacional RDD2022).</p>
+        <a class="link" href="#demo">Ver informe interactivo ↓</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="media">
+        <!-- Reemplazar por video/imágenes del caso manufactura -->
+        <div class="placeholder"><b>▶ Video caso manufactura</b>detección de defectos en línea de producción</div>
+      </div>
+      <div class="body">
+        <span class="tag">Manufactura</span>
+        <h3>Defectos de calidad en línea de producción</h3>
+        <p>Detección automática de defectos superficiales en productos de vidrio
+           en línea, con cámaras estándar — reduce la carga de inspección manual
+           y captura fallas invisibles por fatiga. Aplicable a aluminio, madera,
+           cerámica, packaging y alimentos.</p>
+        <a class="link" href="#contacto">Aplicarlo a tu producto →</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="media">
+        <div class="placeholder"><b>▶ Tu caso aquí</b>PoC en 4–6 semanas sobre tus propios datos</div>
+      </div>
+      <div class="body">
+        <span class="tag">Tu industria</span>
+        <h3>¿Drones, CCTV, agro, energía solar?</h3>
+        <p>Si tu operación ya genera video o imágenes (drones, cámaras fijas,
+           vehículos), ese material contiene respuestas que hoy nadie procesa.
+           PoC de precio fijo con criterio de éxito medible y acordado antes de partir.</p>
+        <a class="link" href="#contacto">Conversemos tu caso →</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ PROCESO ============ -->
+<section id="proceso">
+  <h2>El pipeline (mi método en 5 pasos)</h2>
+  <p class="sub">Mismo proceso probado en cada vertical — cambia el problema, no el método.</p>
+  <div class="pipe">
+    <div class="step"><div class="ico">🎥</div><b>1. Captura</b><small>tus cámaras, drones o video existente — sin hardware especial</small></div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="ico">🧹</div><b>2. Preparación</b><small>extracción de frames, limpieza y etiquetado mínimo</small></div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="ico">🧠</div><b>3. Modelo</b><small>fine-tuning de redes preentrenadas (YOLO) sobre tus datos</small></div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="ico">📍</div><b>4. Análisis</b><small>deduplicación, severidad y georreferenciación automática</small></div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="ico">📊</div><b>5. Entregable</b><small>mapa interactivo + datos priorizados listos para decidir</small></div>
+  </div>
+</section>
+
+<!-- ============ DEMO INTERACTIVO ============ -->
+<section id="demo">
+  <h2>Demo interactivo — tócalo tú mismo</h2>
+  <p class="sub">Informe real generado por el pipeline: cada punto es un deterioro detectado,
+     con severidad, confianza y evidencia. Así se ve lo que recibirías.</p>
+  <!-- El informe del pipeline se embebe directo. Mantén informe_vial.html en la misma carpeta. -->
+  <iframe class="demo-frame" src="informe_vial.html" title="Informe interactivo de inspección vial"></iframe>
+  <p style="margin-top:18px;color:var(--muted);font-size:.9rem">
+    ¿Quieres probar el modelo con tu propia imagen?
+    <!-- Cuando publiques la app Gradio en Hugging Face Spaces, pega el link aquí -->
+    <a href="#contacto">→ Demo en vivo próximamente — pídeme acceso anticipado</a>
+  </p>
+</section>
+
+<!-- ============ CONTACTO ============ -->
+<section id="contacto">
+  <div class="contact">
+    <h2>¿Tu operación genera video o imágenes?</h2>
+    <p class="sub" style="margin:12px auto 28px">Agenda 20 minutos: te muestro el demo
+       funcionando y evaluamos si tu caso tiene solución con visión computacional. Sin compromiso.</p>
+    <!-- Reemplaza # por tu link de Calendly y actualiza el mail -->
+    <a class="cta" href="mailto:nikoantu@gmail.com?subject=Demo%20visión%20computacional">Escríbeme</a>
+    <a class="cta ghost" href="#" onclick="alert('Reemplaza este botón con tu link de Calendly');return false">Agendar llamada</a>
+    <p style="margin-top:22px;color:var(--muted);font-size:.9rem">
+      LinkedIn: <a href="#">tu-perfil</a> · Santiago, Chile · Proyectos remotos en todo el mundo
+    </p>
+  </div>
+</section>
+
+<footer>© 2026 Nikolas — Visión Computacional Aplicada. Demo vial entrenado sobre RDD2022 (CC BY-SA 4.0, Arya et al.).</footer>
+
+</body>
+</html>
